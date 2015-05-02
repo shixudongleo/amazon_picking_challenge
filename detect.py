@@ -6,12 +6,14 @@
     Output: object class name, bounding box, depth of the object
  """
 
+from fg_segmentation.background_subtractor import BackgroundSubtractor
+
 
 __author__ = 'shixudongleo'
 __date__ = '2015/05/02'
 
 
-def detect(rgb_img, depth_img):
+def detect(rgb_img, depth_img, bg_model):
     result = {}
     result['label'] = ''
     result['bbox'] = (0, 0, 0, 0)
@@ -19,6 +21,9 @@ def detect(rgb_img, depth_img):
     return result
 
 if __name__ == '__main__':
+    # build  bg model
+    bg_model = BackgroundSubtractor().build_bg_model()
+
     # read test_rgb.png and test_depth.txt
     rgb_file = 'test_rgb.png'
     test_rgb = None
