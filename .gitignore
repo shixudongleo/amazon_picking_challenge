@@ -59,9 +59,5 @@ target/
 # ropeproject
 .ropeproject/
 
-# not include data
-fg_segmentation/bg_images/
-color_hist_detector/objects_training_data/
-
 # not include .DS_Store
 .DS_Store

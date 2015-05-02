@@ -1,4 +1,12 @@
+#!/usr/bin/env python
+"""
+    Histogram feature extractor
+"""
+
 import cv2
+
+__author__ = 'shixudongleo'
+__date__ = '2015/05/02'
 
 
 class RGBHistogram:
