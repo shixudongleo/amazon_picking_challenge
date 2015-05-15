@@ -36,7 +36,3 @@ get the script whole path:
 os.path.realpath(\_\_file\_\_) 
 further to get the dir path by: 
 path, file = os.path.split(os.path.realpath(\_\_file\_\_))
-
-### TODO
-* bg model file in fg_segmentation 
-* color hist model in color_hist_detector
