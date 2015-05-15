@@ -33,9 +33,9 @@ so once the script is run other than the script path, it reuslts in error.
 
 The solutin is to transfer the relative path to absolute path. 
 get the script whole path: 
-os.path.realpath(__file__) 
+os.path.realpath(\_\_file\_\_) 
 further to get the dir path by: 
-path, file = os.path.split(os.path.realpath(__file__))
+path, file = os.path.split(os.path.realpath(\_\_file\_\_))
 
 ### TODO
 * bg model file in fg_segmentation 
