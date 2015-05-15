@@ -6,7 +6,7 @@ put background model images in bg_images folder
 
 in show_foreground.py script folder
 ```
-python show_foreground.py -i test_image.png
+python show_foreground.py -d folder_with_images
 ```
 
 ### Color Histogram Detector
