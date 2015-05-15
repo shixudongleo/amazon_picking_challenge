@@ -19,6 +19,9 @@ __date__ = '2015/05/02'
 
 class Color_Hist_Classifier:
     def __init__(self, feature_extractor):
+        path, _ = os.path.split(os.path.realpath(__file__))
+        self.model_file = os.path.join(path, 'rgb_hist_model.txt')
+        self.train_dir  = os.path.join(path, 'objects_training_data')
         self.param_grid = {'C': [10**x for x in range(2, 5)],
                            'gamma': [10**x for x in range(-4, 0)]}
         self.clf = GridSearchCV(SVC(kernel='rbf', class_weight='auto',
@@ -36,7 +39,8 @@ class Color_Hist_Classifier:
                                  'kygen_squeakin_eggs_plush_puppies': 10,
                                  'mommys_helper_outlet_plugs': 11,
                                  'munchkin_white_hot_duck_bath_toy': 12,
-                                 'oreo_mega_stuf': 13}
+                                 'oreo_mega_stuf': 13,
+                                 'mead_index_cards': 14}
 
         self.label_name_table = {1: 'crayola_64_ct',
                                  2: 'elmers_washable_no_run_school_glue',
@@ -50,7 +54,8 @@ class Color_Hist_Classifier:
                                  10: 'kygen_squeakin_eggs_plush_puppies',
                                  11: 'mommys_helper_outlet_plugs',
                                  12: 'munchkin_white_hot_duck_bath_toy',
-                                 13: 'oreo_mega_stuf'}
+                                 13: 'oreo_mega_stuf',
+                                 14: 'mead_index_cards'}
         self.descriptor = feature_extractor
 
     def train(self, train_X, train_y):
@@ -72,12 +77,13 @@ class Color_Hist_Classifier:
         pred = self.clf.predict(test_X)
 
         return pred
-    def prepare_data(self, train_data_dir, bg_model):
+
+    def prepare_data(self, bg_model):
         X = []
         y = []
 
-        obj_dirs = [os.path.join(train_data_dir, dir)
-                    for dir in os.listdir(train_data_dir)]
+        obj_dirs = [os.path.join(self.train_dir, dir)
+                    for dir in os.listdir(self.train_dir)]
         obj_dirs = [dir for dir in obj_dirs if os.path.isdir(dir)]
 
         dir_label_tuples = []
@@ -105,55 +111,17 @@ class Color_Hist_Classifier:
 
         return X, y
 
-    def save_model(self, model_file='rgb_hist_model.txt'):
-        f = open(model_file, 'w')
+    def save_model(self):
+        f = open(self.model_file, 'w')
         cPickle.dump(self.clf, f)
         f.close()
 
-    def load_model(self, model_file='rgb_hist_model.txt'):
-        clf = cPickle.loads(open(model_file).read())
+    def load_model(self):
+        clf = cPickle.loads(open(self.model_file).read())
         self.clf = clf
 
-        return self
-
-if __name__ == '__main__' and __package__ is None:
-    from os import sys, path
-    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-    from fg_segmentation.background_subtractor import BackgroundSubtractor
-    from rgbhistogram import RGBHistogram, HSVHistogram
-
-    bg_images = '/Users/shixudongleo/Projects/RoboticsVision/vision_4_amazon_challenge/fg_segmentation/bg_images'
-    bg_model = BackgroundSubtractor().build_bg_model(bg_dir=bg_images)
-
-    feature_extractor = RGBHistogram()
-    color_clf = Color_Hist_Classifier(feature_extractor)
-
-    model_file = 'rgb_hist_model.txt'
-
-    if os.path.exists(model_file):
-        # load model
-        color_clf.load_model(model_file=model_file)
-    else:
-        # train model
-        train_data = './objects_training_data'
-        X, y = color_clf.prepare_data(train_data, bg_model)
-        color_clf.train(X, y)
-        color_clf.save_model(model_file=model_file)
-
-
-#    # test accuracy of classifier
-#    from sklearn.cross_validation import train_test_split
-#    from sklearn.metrics import classification_report
-#    from sklearn.metrics import confusion_matrix
-#
-#    feature_extractor = RGBHistogram()
-#    color_clf = Color_Hist_Classifier(feature_extractor)
-#
-#    data = './objects_training_data'
-#    X, y = color_clf.prepare_data(data, bg_model)
-#    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
-#    color_clf.train(X_train, y_train)
-#
-#    y_pred = color_clf.predict(X_test)
-#    print classification_report(y_test, y_pred)
-#    print confusion_matrix(y_test, y_pred, labels=range(13))
+    def is_model_trained(self):
+        if os.path.exists(self.model_file):
+            return True
+        else:
+            return False

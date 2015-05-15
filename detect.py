@@ -30,6 +30,7 @@ def get_center_depth(depth_img, contour):
 
     return depth
 
+
 def detect_objects_by_contour(img, min_size=100, max_size=1000):
     # contour detection
     # return contour and mask tutples
@@ -83,13 +84,19 @@ if __name__ == '__main__':
     args = vars(ap.parse_args())
 
     # build  bg model
-    bg_images = '/Users/shixudongleo/Projects/RoboticsVision/vision_4_amazon_challenge/fg_segmentation/bg_images'
-    bg_model = BackgroundSubtractor().build_bg_model(bg_dir=bg_images)
+    bg_model = BackgroundSubtractor().build_bg_model()
 
-    model_file = '/Users/shixudongleo/Projects/RoboticsVision/vision_4_amazon_challenge/color_hist_detector/rgb_hist_model.txt'
     feature_extractor = RGBHistogram()
     color_clf = Color_Hist_Classifier(feature_extractor)
-    color_clf = color_clf.load_model(model_file=model_file)
+
+    if color_clf.is_model_trained():
+        # load model
+        color_clf.load_model()
+    else:
+        # train model
+        X, y = color_clf.prepare_data(bg_model)
+        color_clf.train(X, y)
+        color_clf.save_model()
 
     # read test_rgb.png and test_depth.txt
     rgb_file = args['image']
