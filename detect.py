@@ -94,7 +94,7 @@ if __name__ == '__main__':
         color_clf.load_model()
     else:
         # train model
-        X, y = color_clf.prepare_data(bg_model)
+        X, y = color_clf.prepare_data()
         color_clf.train(X, y)
         color_clf.save_model()
 

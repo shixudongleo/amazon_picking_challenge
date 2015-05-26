@@ -22,6 +22,7 @@ class Color_Hist_Classifier:
         path, _ = os.path.split(os.path.realpath(__file__))
         self.model_file = os.path.join(path, 'rgb_hist_model.txt')
         self.train_dir  = os.path.join(path, 'objects_training_data')
+        self.fg_dir = os.path.join(path, 'objects_training_data_fg')
         self.param_grid = {'C': [10**x for x in range(2, 5)],
                            'gamma': [10**x for x in range(-4, 0)]}
         self.clf = GridSearchCV(SVC(kernel='rbf', class_weight='auto',
@@ -78,29 +79,25 @@ class Color_Hist_Classifier:
 
         return pred
 
-    def prepare_data(self, bg_model):
+    def prepare_data(self):
         X = []
         y = []
 
-        obj_dirs = [os.path.join(self.train_dir, dir)
-                    for dir in os.listdir(self.train_dir)]
-        obj_dirs = [dir for dir in obj_dirs if os.path.isdir(dir)]
+        objs = [ dir for dir in os.listdir(self.train_dir)
+                if os.path.isdir(os.path.join(self.train_dir, dir))]
 
-        dir_label_tuples = []
-        for obj_dir in obj_dirs:
-            name = obj_dir.split('/').pop()
-            label = self.name_label_table[name]
+        for obj in objs:
+            label = self.name_label_table[obj]
+            obj_dir = os.path.join(self.train_dir, obj)
+            fg_dir  = os.path.join(self.fg_dir, obj)
 
-            dir_label_tuples.append((obj_dir, label))
+            imgs = [file for file in os.listdir(obj_dir)
+                    if file.endswith('.png')]
 
-        for (img_dir, label) in dir_label_tuples:
-            img_files = [os.path.join(img_dir, file)
-                         for file in os.listdir(img_dir)
-                         if file.endswith('.png')]
-
-            for filename in img_files:
-                img = cv2.imread(filename)
-                fg_mask = bg_model.get_fg_mask(img)
+            for img_name in imgs:
+                img = cv2.imread(os.path.join(obj_dir, img_name))
+                fg_mask = cv2.imread(os.path.join(fg_dir, img_name))
+                fg_mask = cv2.cvtColor(fg_mask, cv2.COLOR_RGB2GRAY)
 
                 feature = self.descriptor.describe_with_mask(img, fg_mask)
                 X.append(feature)

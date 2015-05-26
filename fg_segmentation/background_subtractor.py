@@ -15,11 +15,16 @@ __date__ = '2015/05/02'
 
 
 class BackgroundSubtractor:
-    def __init__(self):
-        path, _ = os.path.split(os.path.realpath(__file__))
-        self.bg_dir = os.path.join(path, 'bg_images')
-        self.bg_model = cv2.BackgroundSubtractorMOG()
-        self.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (11, 11))
+    def __init__(self, bg_dir=None):
+        if bg_dir is None:
+            path, _ = os.path.split(os.path.realpath(__file__))
+            self.bg_dir = os.path.join(path, 'bg_images')
+            self.bg_model = cv2.BackgroundSubtractorMOG()
+            self.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (11, 11))
+        else:
+            self.bg_dir = bg_dir
+            self.bg_model = cv2.BackgroundSubtractorMOG()
+            self.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (11, 11))
 
     def get_fg_mask(self, img):
         fg_mask = self.bg_model.apply(img)
