@@ -16,14 +16,12 @@ __author__ = 'shixudongleo'
 __date__ = '2015/05/15'
 
 if __name__ == '__main__':
-    bg_model = BackgroundSubtractor().build_bg_model()
-
     # test accuracy of classifier
     feature_extractor = RGBHistogram()
     # feature_extractor = HSVHistogram()
     color_clf = Color_Hist_Classifier(feature_extractor)
 
-    X, y = color_clf.prepare_data(bg_model)
+    X, y = color_clf.prepare_data()
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
     color_clf.train(X_train, y_train)
 
