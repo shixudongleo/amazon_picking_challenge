@@ -14,6 +14,7 @@ put object images in objects_training_data folder,
 with each object under their name folder
 
 foreground masks for training images are in objects_training_data_fg folder.
+
 generate foreground mask by:
 ```
 python write_foreground.py
